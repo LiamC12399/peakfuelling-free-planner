@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeakFuelling | Free Meal Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-hero:#152a1e;--bg-black:#070707;--bg-card:#26493a;--bg-mid:#1b3526;
+  --cream:#f0ebe0;--cream-dim:rgba(240,235,224,.15);--cream-muted:rgba(240,235,224,.55);
+  --cream-faint:rgba(240,235,224,.06);--line:rgba(240,235,224,.12);
+  --wa-bg:#0b141a;--wa-header:#202c33;--wa-input-bg:#2a3942;
+  --wa-out:#005c4b;--wa-in:#202c33;--wa-text:#e9edef;--wa-muted:#8696a0;
+  --wa-green:#25d366;--wa-divider:rgba(134,150,160,.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg-black);color:var(--cream);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+/* LANDING PAGE */
+#landing{min-height:100vh;display:flex;flex-direction:column;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.6rem;border-bottom:1px solid var(--line);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.12em;color:var(--cream);}
+.nav-tag{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cream-muted);}
+.urgency{background:var(--bg-mid);padding:.6rem 1.4rem;display:flex;align-items:center;justify-content:center;gap:.7rem;border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+.urgency::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--cream-faint),transparent);animation:shimmer 3s infinite;}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.urgency-dot{width:7px;height:7px;background:var(--cream);border-radius:50%;flex-shrink:0;animation:upulse 1.4s ease-in-out infinite;}
+@keyframes upulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.urgency-text{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--cream-muted);}
+.urgency-text span{color:var(--cream);}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 1.4rem 5rem;text-align:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(21,42,30,.6) 0%,transparent 70%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--cream-faint) 1px,transparent 1px),linear-gradient(90deg,var(--cream-faint) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 75%);pointer-events:none;}
+.hero-inner{position:relative;z-index:2;max-width:580px;width:100%;}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.45em;text-transform:uppercase;color:var(--cream-muted);margin-bottom:1.4rem;display:flex;align-items:center;justify-content:center;gap:.8rem;}
+.eyebrow::before,.eyebrow::after{content:'';display:block;width:22px;height:1px;background:var(--cream-muted);}
+.big-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.2rem,13vw,7rem);line-height:.9;letter-spacing:.02em;color:var(--cream);margin-bottom:1.4rem;}
+.big-title .out{-webkit-text-stroke:2px var(--cream);color:transparent;}
+.hero-p{font-size:.95rem;line-height:1.8;color:var(--cream-muted);max-width:440px;margin:0 auto 2rem;}
+.pillars{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:2.4rem;}
+.ptag{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cream-muted);background:var(--cream-faint);border:1px solid var(--cream-dim);padding:5px 12px;}
+.form-wrap{background:rgba(14,14,14,.8);border:1px solid var(--line);padding:2rem 1.6rem;max-width:400px;margin:0 auto;position:relative;}
+.form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cream-dim);}
+.flabel{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--cream-muted);display:block;margin-bottom:.5rem;}
+.finput{width:100%;background:var(--bg-mid);border:1px solid var(--line);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.9rem;padding:.85rem 1rem;margin-bottom:1rem;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0;}
+.finput::placeholder{color:var(--cream-muted);}
+.finput:focus{border-color:var(--cream-muted);}
+.finput.err{border-color:rgba(192,57,43,.6);}
+.btn-primary{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.22em;color:var(--bg-hero);background:var(--cream);border:none;padding:1.1rem 3rem;cursor:pointer;clip-path:polygon(14px 0%,100% 0%,calc(100% - 14px) 100%,0% 100%);transition:all .25s;display:inline-block;width:100%;}
+.btn-primary:hover{opacity:.9;transform:translateY(-2px);}
+.form-note{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cream-muted);margin-top:.8rem;opacity:.7;text-align:center;}
+.hero-stats{display:flex;gap:2.2rem;justify-content:center;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line);}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.05em;color:var(--cream);line-height:1;text-align:center;}
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cream-muted);margin-top:.3rem;text-align:center;}
+
+/* WHATSAPP UI */
+#planner{display:none;flex-direction:column;height:100vh;height:100dvh;background:var(--wa-bg);}
+#planner.active{display:flex;}
+
+.wa-header{
+  background:var(--wa-header);
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-shrink:0;
+  border-bottom:1px solid var(--wa-divider);
+}
+.wa-back{color:var(--wa-green);font-size:24px;display:flex;align-items:center;cursor:pointer;flex-shrink:0;}
+.wa-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+  color:#fff;flex-shrink:0;letter-spacing:0;
+}
+.wa-info{flex:1;}
+.wa-name{font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:var(--wa-text);line-height:1.2;}
+.wa-status{font-size:12px;color:var(--wa-muted);margin-top:2px;display:flex;align-items:center;gap:4px;}
+.wa-online-dot{width:6px;height:6px;border-radius:50%;background:var(--wa-green);flex-shrink:0;}
+.wa-uses-badge{
+  font-family:'DM Sans',sans-serif;font-size:11px;
+  background:rgba(37,211,102,.15);color:var(--wa-green);
+  padding:3px 8px;border-radius:12px;border:1px solid rgba(37,211,102,.3);
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* Chat background with WhatsApp pattern */
+.wa-chat{
+  flex:1;overflow-y:auto;
+  padding:12px 16px 8px;
+  display:flex;flex-direction:column;gap:2px;
+  background-color:var(--wa-bg);
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23182229' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.wa-chat::-webkit-scrollbar{width:3px;}
+.wa-chat::-webkit-scrollbar-thumb{background:rgba(134,150,160,.2);border-radius:2px;}
+
+/* Date divider */
+.wa-date-divider{
+  text-align:center;margin:8px 0;
+}
+.wa-date-divider span{
+  font-family:'DM Sans',sans-serif;font-size:12px;color:var(--wa-muted);
+  background:rgba(11,20,26,.8);padding:4px 10px;border-radius:8px;
+  display:inline-block;
+}
+
+/* Message rows */
+.wa-row{display:flex;margin-bottom:2px;}
+.wa-row.out{justify-content:flex-end;}
+.wa-row.in{justify-content:flex-start;}
+.wa-row.out + .wa-row.in,.wa-row.in + .wa-row.out{margin-top:6px;}
+
+/* Bubbles */
+.wa-bubble{
+  max-width:72%;
+  padding:7px 12px 6px;
+  border-radius:8px;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--wa-text);
+  position:relative;
+  word-wrap:break-word;
+  animation:waFade .15s ease forwards;
+}
+@keyframes waFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.wa-row.out .wa-bubble{
+  background:var(--wa-out);
+  border-radius:8px 8px 2px 8px;
+}
+.wa-row.in .wa-bubble{
+  background:var(--wa-in);
+  border-radius:8px 8px 8px 2px;
+}
+
+/* Bubble tail */
+.wa-row.out .wa-bubble::after{
+  content:'';position:absolute;bottom:0;right:-8px;
+  width:0;height:0;
+  border-style:solid;
+  border-width:0 0 10px 10px;
+  border-color:transparent transparent var(--wa-out) transparent;
+}
+.wa-row.in .wa-bubble::after{
+  content:'';position:absolute;bottom:0;left:-8px;
+  width:0;height:0;
+  border-style:solid;
+  border-width:0 10px 10px 0;
+  border-color:transparent var(--wa-in) transparent transparent;
+}
+
+/* Bubble content */
+.wa-bubble p{margin-bottom:5px;}
+.wa-bubble p:last-child{margin-bottom:0;}
+.wa-bubble .meal-head{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:17px;letter-spacing:.08em;
+  color:#fff;margin:12px 0 4px;
+  padding-bottom:4px;
+  border-bottom:1px solid rgba(134,150,160,.25);
+}
+.wa-bubble .meal-head:first-child{margin-top:0;}
+.wa-bubble strong{font-weight:600;color:#fff;}
+.wa-bubble ul,.wa-bubble ol{padding-left:18px;margin-bottom:6px;}
+.wa-bubble li{margin-bottom:3px;line-height:1.5;}
+.wa-bubble .pf-tag{
+  margin-top:10px;padding-top:8px;
+  border-top:1px solid rgba(134,150,160,.2);
+  font-size:11px;color:var(--wa-muted);
+  font-style:italic;
+}
+
+/* Timestamp */
+.wa-meta{
+  display:flex;align-items:center;justify-content:flex-end;
+  gap:4px;margin-top:2px;
+}
+.wa-time{font-size:11px;color:rgba(134,150,160,.8);}
+.wa-tick{color:var(--wa-green);font-size:13px;line-height:1;}
+
+/* Typing indicator */
+.wa-typing-row{display:flex;justify-content:flex-start;margin-bottom:4px;}
+.wa-typing-bubble{
+  background:var(--wa-in);padding:12px 16px;
+  border-radius:8px 8px 8px 2px;
+  display:flex;gap:4px;align-items:center;
+}
+.wa-typing-bubble span{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--wa-muted);
+  animation:waDot 1.3s infinite;
+}
+.wa-typing-bubble span:nth-child(2){animation-delay:.2s;}
+.wa-typing-bubble span:nth-child(3){animation-delay:.4s;}
+@keyframes waDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+/* Quick reply chips */
+.wa-chips{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:6px 0 4px;
+  justify-content:flex-start;
+  animation:waFade .2s ease forwards;
+}
+.wa-chip{
+  background:transparent;
+  border:1.5px solid var(--wa-green);
+  color:var(--wa-green);
+  font-family:'DM Sans',sans-serif;font-size:13px;
+  padding:7px 16px;border-radius:20px;
+  cursor:pointer;transition:background .18s,color .18s;
+  white-space:nowrap;
+}
+.wa-chip:hover,.wa-chip:active{background:var(--wa-green);color:#000;}
+
+/* Input bar */
+.wa-input-bar{
+  background:var(--wa-header);
+  padding:8px 12px;
+  display:flex;gap:8px;align-items:flex-end;
+  flex-shrink:0;
+  border-top:1px solid var(--wa-divider);
+}
+.wa-text-wrap{
+  flex:1;background:var(--wa-input-bg);
+  border-radius:24px;padding:10px 18px;
+  display:flex;align-items:center;
+}
+.wa-text-wrap textarea{
+  width:100%;background:transparent;border:none;outline:none;
+  color:var(--wa-text);font-family:'DM Sans',sans-serif;
+  font-size:15px;resize:none;
+  max-height:120px;min-height:22px;line-height:1.4;display:block;
+}
+.wa-text-wrap textarea::placeholder{color:var(--wa-muted);}
+.wa-send-btn{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--wa-green);color:#fff;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .18s,transform .1s;
+}
+.wa-send-btn:disabled{background:#2a3942;cursor:not-allowed;}
+.wa-send-btn:not(:disabled):active{transform:scale(.95);}
+.wa-send-btn:not(:disabled):hover{background:#22c55e;}
+
+/* LOCKED SCREEN */
+#locked{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.4rem;text-align:center;}
+#locked.active{display:flex;}
+.locked-icon{font-size:3rem;margin-bottom:1.4rem;}
+.locked-tag{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--cream-muted);margin-bottom:.8rem;}
+.locked-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,8vw,4rem);letter-spacing:.04em;color:var(--cream);line-height:1;margin-bottom:1rem;}
+.locked-sub{font-size:.9rem;color:var(--cream-muted);line-height:1.8;max-width:400px;margin:0 auto 1.6rem;}
+.locked-list{background:rgba(14,14,14,.8);border:1px solid var(--line);padding:1.2rem 1.4rem;max-width:380px;margin:0 auto 2rem;text-align:left;}
+.locked-item{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cream);padding:.35rem 0;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--line);}
+.locked-item:last-child{border-bottom:none;}
+.locked-item::before{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--cream);flex-shrink:0;}
+.locked-note{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cream-muted);}
+
+@media(max-width:480px){.wa-bubble{max-width:85%;}.wa-chat{padding:8px 10px 6px;}.hero-stats{gap:1.4rem;}}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing">
+  <nav class="nav">
+    <div class="nav-logo">PeakFuelling</div>
+    <div class="nav-tag">Free Tool</div>
+  </nav>
+  <div class="urgency">
+    <div class="urgency-dot"></div>
+    <div class="urgency-text">Built on <span>real match week science.</span> Used by footballers serious about performance.</div>
+  </div>
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div class="eyebrow">Free Match Week Tool</div>
+      <div class="big-title">Your Meals.<br><span class="out">Your Game.</span><br>Sorted.</div>
+      <p class="hero-p">Tell us your game day. We'll build your most important meal for right now, timed to where you are in the match week, built around your position and load.</p>
+      <div class="pillars">
+        <div class="ptag">Carb Periodisation</div>
+        <div class="ptag">Position Specific</div>
+        <div class="ptag">Match Week Timing</div>
+        <div class="ptag">Real Recipes</div>
+        <div class="ptag">100% Free</div>
+      </div>
+      <div class="form-wrap">
+        <form name="free-planner" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="signupForm">
+          <input type="hidden" name="form-name" value="free-planner">
+          <input type="hidden" name="bot-field" style="display:none">
+          <label class="flabel" for="fname">First Name</label>
+          <input class="finput" type="text" id="fname" name="name" placeholder="Your first name" autocomplete="given-name">
+          <label class="flabel" for="femail">Email Address</label>
+          <input class="finput" type="email" id="femail" name="email" placeholder="your@email.com" autocomplete="email">
+          <button type="submit" class="btn-primary">Get My Free Meal Planner</button>
+          <p class="form-note">No spam. Unsubscribe any time.</p>
+        </form>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num">4-2-1-0</div><div class="stat-lbl">Match Day Protocol</div></div>
+        <div><div class="stat-num">MD-4</div><div class="stat-lbl">Week Structure</div></div>
+        <div><div class="stat-num">2.0g</div><div class="stat-lbl">Protein Per KG</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHATSAPP PLANNER -->
+<div id="planner">
+  <div class="wa-header">
+    <div class="wa-avatar">LC</div>
+    <div class="wa-info">
+      <div class="wa-name">Liam Carroll Nutrition</div>
+      <div class="wa-status"><div class="wa-online-dot"></div>online</div>
+    </div>
+    <div class="wa-uses-badge" id="usesBadge"></div>
+  </div>
+  <div class="wa-chat" id="chat">
+    <div class="wa-date-divider"><span>Today</span></div>
+  </div>
+  <div class="wa-input-bar">
+    <div class="wa-text-wrap">
+      <textarea id="input" placeholder="Message" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    </div>
+    <button class="wa-send-btn" id="sendBtn" onclick="sendFromInput()" disabled aria-label="Send">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- LOCKED -->
+<div id="locked">
+  <div class="locked-icon">&#9651;</div>
+  <div class="locked-tag">Free Version</div>
+  <div class="locked-title">You've Used<br>Your 3 Free<br>Sessions.</div>
+  <p class="locked-sub">The free version gives you 3 sessions to see what proper match week nutrition looks like. You've used them all.</p>
+  <div class="locked-list">
+    <div class="locked-item">Full match week, every meal, every day</div>
+    <div class="locked-item">Timed to your actual kick-off</div>
+    <div class="locked-item">Built around your GPS and training load</div>
+    <div class="locked-item">Shopping list included</div>
+    <div class="locked-item">Direct WhatsApp access to Liam</div>
+    <div class="locked-item">Monthly deep dive call</div>
+  </div>
+  <p class="locked-note">That's what Full 90 Formula is for.</p>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are Liam Carroll, a football nutritionist with a Masters in Sports Nutrition running PeakFuelling. You are chatting with footballers in a WhatsApp-style chat.
+
+Personality: fun, casual, a laugh. When delivering nutrition guidance, switch to confident, direct, credible. No waffle. Keep messages short like real WhatsApp. Never use em dashes. Use commas or full stops instead.
+
+ONE MEAL PER CONVERSATION. Hard limit. No full days, no shopping lists, no weekly plans, no second meals. If they push for more say exactly: "Afraid I can't be telling you all that for free mate, that's Full 90 Formula territory. But if you want to get all of this sorted properly, I'd be more than happy to help. That's what the coaching is for." Then stop.
+
+OPENING: Read what they sent. Extract everything already known. Only ask what you genuinely do not know. One question at a time. If vague, say: "Hey! How can I help?"
+
+INFER from their message:
+Match day or game today or game tonight = today is match day, skip date and game day questions.
+Night before or before my game tomorrow = today is MD-1, skip date question.
+Game Saturday = game day is Saturday, do not ask again.
+Training details mentioned = do not ask about training again.
+MATCH DAY: never ask about training. Go from kick-off straight to weight.
+
+COLLECT only what is missing, one at a time:
+1. Today's day if unknown
+2. Game day and kick-off time together if unknown
+3. Training today, time, duration on non-match days only if not mentioned
+4. Weight in kg
+5. Position (GK, DEF, MID, FWD, Winger)
+6. Cooking ability (beginner, intermediate, advanced)
+
+Build meal immediately after. No more questions.
+
+WHICH MEAL: MD-4 or earlier = dinner. MD-3 = lunch. MD-2 = dinner. MD-1 = dinner, carb load, most critical. Match day = pre-match meal 4 hours before kick-off. MD+1 = breakfast.
+
+MATCH DAY: work back from kick-off. 4hrs = the meal. 2hrs = toast and honey, banana, juice. 1hr = banana, dates, rice cakes with honey, small juice. During (18+) = gels 30-60g/hr, sports drink. During (under 18) = Lucozade Sport, banana at half time, water, no gels. Match day timing only, never on other days.
+
+PROTEIN: 2.0g/kg daily. CHO for the meal: MD-4+ 1.0g/kg, MD-3 1.5-2.0, MD-2 1.0, MD-1 dinner 2.0 white carbs low fat low fibre, match day 2.0 lean protein low fat low fibre, MD+1 2.0. High CHO days: pair solid food with large OJ or apple juice. Never massive solid portions alone.
+
+POSITION: GK lower end. DEF lower-mid. MID upper end always. FWD and Winger mid to upper.
+
+PROTEIN SOURCES: MD-1 and match day pre-match = lean only, chicken breast, turkey, white fish, no salmon, red meat, eggs as main, full fat dairy. All other days = salmon, steak, mince, eggs, full fat dairy all fine.
+
+BREAKFAST only at breakfast. Never dinner food at breakfast. Options: porridge and banana and honey, eggs on toast, yoghurt and granola and fruit, overnight oats, smoothie with oats and banana and milk, pancakes and honey (MD-1 and match day only), toast and PB and banana, Weetabix or Shreddies with milk and fruit. High CHO pair with large OJ or apple juice.
+
+LUNCH: chicken and rice bowl, pasta and tomato and mince, jacket potato and tuna, chicken wrap (avoid MD-1), microwave rice and tinned tuna when time is short.
+
+DINNER: salmon and sweet potato and green beans (avoid MD-1), chicken stir fry and noodles (avoid MD-1), beef and rice and peppers, pasta and chicken and pesto, turkey bolognese and pasta, cod and new potatoes and broccoli (reduce broccoli MD-1), chicken and rice and tinned tomatoes.
+
+MD-1 and match day: white over wholegrain always. No high fibre veg. No heavy or fatty meals. No new foods. Liquid carbs to hit targets not volume.
+
+COOKING: beginner = one pan under 15 mins. Intermediate = from scratch under 30 mins. Advanced = multi-component under 45 mins. Adjust for time regardless. Full step by step instructions always. Real food, achievable, nothing pretentious.
+
+INSIGHT after recipe: one sharp line specific to their position or MD day, 2-3 sentences, confident not preachy. Example: Most midfielders undereat on MD-3 and wonder why their legs go in the last 20. This lunch is why yours won't.
+
+SIGN OFF after every meal: Right, now you've got the meal. Go and smash it. Have an unbelievable game.
+
+Then new line: Built by PeakFuelling.
+
+UNDER 18s: no supplements, no powder, no gels, no caffeine. Whole food swaps only.`;
+
+const MAX_USES=3,KEY="pf_free_uses";
+function getUses(){return parseInt(localStorage.getItem(KEY)||"0",10);}
+function incUses(){const u=getUses()+1;localStorage.setItem(KEY,u);return u;}
+function updateBadge(){
+  const rem=MAX_USES-getUses();
+  const el=document.getElementById("usesBadge");
+  if(el)el.textContent=rem>0?rem+" session"+(rem===1?"":"s")+" left":"No sessions left";
+}
+
+function nowTime(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+
+let msgs=[],loading=false,counted=false;
+
+const CHIPS=[
+  {m:t=>t.includes("do you have training today"),c:["Yes, training today","No training today"]},
+  {m:t=>t.includes("goalkeeper")&&t.includes("defender"),c:["Goalkeeper","Defender","Midfielder","Forward / Winger"]},
+  {m:t=>t.includes("beginner")&&t.includes("intermediate"),c:["Beginner","Intermediate","Advanced"]},
+  {m:t=>t.includes("how long")&&t.includes("roughly"),c:["About 60 mins","About 75 mins","About 90 mins","Not sure"]},
+];
+function getChips(t){const tl=t.toLowerCase();for(const r of CHIPS){if(r.m(tl))return r.c;}return[];}
+
+function formatBubble(text){
+  const mark="Built by PeakFuelling.";
+  let main=text,tag=null;
+  const fi=text.indexOf(mark);
+  if(fi!==-1){main=text.slice(0,fi).trim();tag=text.slice(fi).trim();}
+  let html="";
+  const lines=main.split("\n");let i=0;
+  while(i<lines.length){
+    const l=lines[i].trim();if(!l){i++;continue;}
+    if((l.startsWith("**")&&l.endsWith("**")&&l.length>4)||l.startsWith("## ")||l.startsWith("### ")){
+      html+=`<div class="meal-head">${esc(l.replace(/^#+\s*/,"").replace(/^\*\*|\*\*$/g,""))}</div>`;
+    }else if(l.startsWith("- ")||l.startsWith("* ")){
+      html+="<ul>";
+      while(i<lines.length&&(lines[i].trim().startsWith("- ")||lines[i].trim().startsWith("* "))){
+        html+=`<li>${inl(lines[i].trim().slice(2))}</li>`;i++;
+      }
+      html+="</ul>";continue;
+    }else if(/^\d+\.\s/.test(l)){
+      html+="<ol>";
+      while(i<lines.length&&/^\d+\.\s/.test(lines[i].trim())){
+        html+=`<li>${inl(lines[i].trim().replace(/^\d+\.\s/,""))}</li>`;i++;
+      }
+      html+="</ol>";continue;
+    }else{html+=`<p>${inl(l)}</p>`;}
+    i++;
+  }
+  if(tag)html+=`<div class="pf-tag">${esc(tag)}</div>`;
+  return html;
+}
+function inl(t){return esc(t).replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");}
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+function scrollBottom(){const c=document.getElementById("chat");c.scrollTop=c.scrollHeight;}
+
+function addMsg(role,content){
+  const row=document.createElement("div");row.className=`wa-row ${role==="user"?"out":"in"}`;
+  const bub=document.createElement("div");bub.className="wa-bubble";
+  if(role==="user"){bub.textContent=content;}else{bub.innerHTML=formatBubble(content);}
+  const meta=document.createElement("div");meta.className="wa-meta";
+  const t=document.createElement("span");t.className="wa-time";t.textContent=nowTime();
+  meta.appendChild(t);
+  if(role==="user"){const tick=document.createElement("span");tick.className="wa-tick";tick.innerHTML="&#10003;&#10003;";meta.appendChild(tick);}
+  const wrap=document.createElement("div");wrap.style.display="flex";wrap.style.flexDirection="column";
+  wrap.appendChild(bub);wrap.appendChild(meta);
+  row.appendChild(wrap);
+  document.getElementById("chat").appendChild(row);
+  renderChipRow(content,role);
+  scrollBottom();
+}
+
+function renderChipRow(text,role){
+  const ex=document.getElementById("chipRow");if(ex)ex.remove();
+  if(role!=="assistant")return;
+  const chips=getChips(text);if(!chips.length)return;
+  const row=document.createElement("div");row.className="wa-chips";row.id="chipRow";
+  chips.forEach(c=>{
+    const btn=document.createElement("button");btn.className="wa-chip";btn.textContent=c;
+    btn.onclick=()=>send(c);row.appendChild(btn);
+  });
+  document.getElementById("chat").appendChild(row);scrollBottom();
+}
+
+function showTyping(){
+  const row=document.createElement("div");row.className="wa-typing-row";row.id="typing";
+  row.innerHTML=`<div class="wa-typing-bubble"><span></span><span></span><span></span></div>`;
+  document.getElementById("chat").appendChild(row);scrollBottom();
+}
+function hideTyping(){const t=document.getElementById("typing");if(t)t.remove();}
+function removeChips(){const e=document.getElementById("chipRow");if(e)e.remove();}
+
+async function send(text){
+  text=text.trim();if(!text||loading)return;
+  if(!counted){
+    const u=incUses();counted=true;updateBadge();
+    if(u>=MAX_USES){
+      setTimeout(()=>{
+        document.getElementById("planner").style.display="none";
+        document.getElementById("locked").classList.add("active");
+      },5000);
+    }
+  }
+  removeChips();msgs.push({role:"user",content:text});addMsg("user",text);
+  const inp=document.getElementById("input");inp.value="";inp.style.height="22px";
+  document.getElementById("sendBtn").disabled=true;loading=true;showTyping();
+  try{
+    const r=await fetch("/.netlify/functions/chat",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({system:SYSTEM_PROMPT,messages:msgs})
+    });
+    const d=await r.json();
+    if(d.error)throw new Error(d.error);
+    const reply=d.content?.[0]?.text||"Something went wrong. Try again.";
+    msgs.push({role:"assistant",content:reply});hideTyping();addMsg("assistant",reply);
+  }catch(e){
+    hideTyping();
+    const err="Error: "+(e.message||"Connection issue.");
+    msgs.push({role:"assistant",content:err});addMsg("assistant",err);
+  }
+  loading=false;
+  document.getElementById("sendBtn").disabled=!document.getElementById("input").value.trim();
+}
+
+function sendFromInput(){send(document.getElementById("input").value);}
+function handleKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendFromInput();}}
+function autoResize(el){
+  el.style.height="22px";
+  el.style.height=Math.min(el.scrollHeight,120)+"px";
+  document.getElementById("sendBtn").disabled=!el.value.trim();
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  if(getUses()>=MAX_USES){
+    document.getElementById("landing").style.display="none";
+    document.getElementById("locked").classList.add("active");
+    return;
+  }
+  document.getElementById("signupForm").addEventListener("submit",function(e){
+    e.preventDefault();
+    const name=document.getElementById("fname").value.trim();
+    const email=document.getElementById("femail").value.trim();
+    let ok=true;
+    ["fname","femail"].forEach(id=>document.getElementById(id).classList.remove("err"));
+    if(!name){document.getElementById("fname").classList.add("err");ok=false;}
+    if(!email||!email.includes("@")){document.getElementById("femail").classList.add("err");ok=false;}
+    if(!ok)return;
+    const fd=new FormData(this);
+    fetch("/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(fd).toString()}).catch(()=>{});
+    document.getElementById("landing").style.display="none";
+    document.getElementById("planner").classList.add("active");
+    updateBadge();
+    setTimeout(()=>addMsg("assistant","Hey! How can I help?"),700);
+  });
+});
+</script>
+</body>
+</html>
